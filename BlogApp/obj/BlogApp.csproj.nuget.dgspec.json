@@ -55,6 +55,10 @@
               "target": "Package",
               "version": "[9.0.4, )"
             },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.4, )"
@@ -68,6 +72,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.4, )"
+            },
+            "System.ComponentModel.Annotations": {
+              "target": "Package",
+              "version": "[5.0.0, )"
             }
           },
           "imports": [

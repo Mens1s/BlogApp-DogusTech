@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using BlogApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApp.Controllers
@@ -26,7 +25,7 @@ namespace BlogApp.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return null;
         }
     }
 }
