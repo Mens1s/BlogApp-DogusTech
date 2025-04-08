@@ -16,4 +16,25 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Identity\" />
+    <Folder Include="Data\Abstract\" />
+    <Folder Include="Data\Concrete\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Mappings\" />
+    <Folder Include="Services\Abstract\" />
+    <Folder Include="Services\Concrete\" />
+    <Folder Include="Services\ValidationRules\" />
+    <Folder Include="ViewModels\Account\" />
+    <Folder Include="ViewModels\BlogPost\" />
+    <Folder Include="ViewModels\Category\" />
+    <Folder Include="ViewModels\Shared\" />
+    <Folder Include="Views\Account\" />
+    <Folder Include="Views\BlogPosts\" />
+    <Folder Include="Views\Categories\" />
+    <Folder Include="Views\Comments\" />
+    <Folder Include="Views\Shared\Components\" />
+  </ItemGroup>
+
 </Project>
