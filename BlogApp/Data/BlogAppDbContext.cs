@@ -38,7 +38,7 @@ namespace BlogApp.Data
 
             builder.Entity<User>()
                 .HasMany(u => u.Comments)
-                .WithOne(c => c.Author)
+                .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

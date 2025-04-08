@@ -24,6 +24,6 @@ namespace BlogApp.Entities
         public string UserId { get; set; } = string.Empty;
 
         [ForeignKey("UserId")]
-        public virtual User? Author { get; set; } = null!;
+        public virtual User? User { get; set; } = null!;
     }
 }

@@ -2,6 +2,8 @@ using BlogApp.Data;
 using BlogApp.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BlogApp.Data.Abstract; 
+using BlogApp.Data.Concrete; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,16 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
+builder.Services.ConfigureApplicationCookie(options => { /* Ayarlar */ });
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// NOT: UnitOfWork kullandýðýmýz için genellikle tek tek repository'leri kaydetmeye GEREK YOKTUR.
+// Çünkü UnitOfWork zaten içinde repository'leri oluþturuyor.
+// Ancak, eðer bir yerde doðrudan IBlogPostRepository'ye ihtiyaç duyarsanýz (UoW kullanmadan),
+// o zaman aþaðýdaki gibi kayýtlarý da yapmanýz gerekebilir (ama genellikle UoW yeterlidir):
+// builder.Services.AddScoped<IBlogPostRepository, EfCoreBlogPostRepository>();
+// builder.Services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
+// builder.Services.AddScoped<ICommentRepository, EfCoreCommentRepository>(); // Yorumlar varsa
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

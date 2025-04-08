@@ -20,8 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\" />
-    <Folder Include="Data\Abstract\" />
-    <Folder Include="Data\Concrete\" />
     <Folder Include="Data\Migrations\" />
     <Folder Include="DTOs\" />
     <Folder Include="Mappings\" />
