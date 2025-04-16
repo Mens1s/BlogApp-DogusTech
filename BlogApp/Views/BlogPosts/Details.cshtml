@@ -1,0 +1,108 @@
+﻿@* Views/BlogPosts/Details.cshtml *@
+@model BlogApp.DTOs.BlogPostDetailDto
+
+@{
+    ViewData["Title"] = Model?.Title ?? "Blog Yazısı Detayı"; 
+}
+
+<div class="container mt-4">
+
+    @if (Model != null) // Modelin null olmadığını kontrol et
+    {
+        <article>
+            <header class="mb-4">
+                @* Başlık *@
+                <h1 class="fw-bolder mb-1">@Model.Title</h1>
+
+                @* Meta Bilgiler *@
+                <div class="text-muted fst-italic mb-2">
+                    Yayınlanma Tarihi: @Model.PublishedDate.ToString("dd MMMM yyyy HH:mm")
+                    @if (Model.Category != null)
+                    {
+                        <span>
+                            | Kategori:
+                            @* Kategoriye link (Category action henüz yok) *@
+                            <a asp-controller="BlogPosts" asp-action="Category" asp-route-categoryId="@Model.Category.Id" class="text-decoration-none">
+                                @Model.Category.Name
+                            </a>
+                        </span>
+                    }
+                    @if (Model.Author != null)
+                    {
+                        <span> | Yazar: @(Model.Author.FullName ?? Model.Author.UserName)</span>
+                        @* Yazar profiline link? (Gerekirse) *@
+                    }
+                </div>
+                <hr />
+
+               
+
+            </header>
+
+            @* Görsel *@
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <figure class="mb-4">
+                    <img class="img-fluid rounded w-100" src="@Model.ImageUrl" alt="@Model.Title" style="max-height: 450px; object-fit: cover;" />
+                </figure>
+            }
+
+            @* İçerik *@
+            <section class="mb-5">
+                
+                @Html.Raw(Model.Content)
+            </section>
+
+        </article>
+
+        @* --- Yorumlar Bölümü (Opsiyonel - Ekstra) --- *@
+        <hr />
+        <section class="mb-5">
+            <h4 class="mb-3">Yorumlar</h4>
+
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Yorum Bırak</h5>
+                        <form asp-controller="Comments" asp-action="Create" method="post">
+                            @* Comments Controller henüz yok *@
+                            <input type="hidden" name="BlogPostId" value="@Model.Id" />
+                            <div class="mb-3">
+                                <textarea name="Content" class="form-control" rows="3" placeholder="Yorumunuzu buraya yazın..." required></textarea>
+                                @* Validation mesajı eklenebilir *@
+                            </div>
+                            <button type="submit" class="btn btn-primary">Gönder</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    Yorum bırakmak için <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path">giriş yapmalısınız</a>.
+                    @* Identity Area yoksa /Account/Login kullanılır *@
+                    @* <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">giriş yapmalısınız</a>. *@
+                </div>
+            }
+
+
+            <p class="text-muted"><i>(Yorum listeleme özelliği henüz eklenmemiştir.)</i></p> @* Şimdilik placeholder *@
+
+        </section>
+        @* --- Yorumlar Bölümü Sonu --- *@
+
+
+        <div class="mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Geri Dön</a>
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            İstenen blog yazısı bulunamadı.
+        </div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Geri Dön</a>
+    }
+</div>

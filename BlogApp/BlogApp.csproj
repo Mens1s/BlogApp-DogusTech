@@ -28,7 +28,6 @@
     <Folder Include="ViewModels\Category\" />
     <Folder Include="ViewModels\Shared\" />
     <Folder Include="Views\Account\" />
-    <Folder Include="Views\BlogPosts\" />
     <Folder Include="Views\Categories\" />
     <Folder Include="Views\Comments\" />
     <Folder Include="Views\Shared\Components\" />
