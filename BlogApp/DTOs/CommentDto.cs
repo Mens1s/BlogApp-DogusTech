@@ -1,6 +1,6 @@
 ﻿namespace BlogApp.DTOs
 {
-    public class CommentsDto
+    public class CommentDto
     {
         public int Id { get; set; }
         public string Content { get; set; } = string.Empty;

@@ -3,7 +3,10 @@ using BlogApp.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BlogApp.Data.Abstract; 
-using BlogApp.Data.Concrete; 
+using BlogApp.Data.Concrete;
+using AutoMapper;
+using BlogApp.Services.Abstract;
+using BlogApp.Services.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +47,11 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // builder.Services.AddScoped<IBlogPostRepository, EfCoreBlogPostRepository>();
 // builder.Services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
 // builder.Services.AddScoped<ICommentRepository, EfCoreCommentRepository>(); // Yorumlar varsa
+builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
