@@ -301,3 +301,4 @@ C:\Users\user\Desktop\Projects\BlogApp\BlogApp\BlogApp\obj\Debug\net9.0\refint\B
 C:\Users\user\Desktop\Projects\BlogApp\BlogApp\BlogApp\obj\Debug\net9.0\BlogApp.pdb
 C:\Users\user\Desktop\Projects\BlogApp\BlogApp\BlogApp\obj\Debug\net9.0\BlogApp.genruntimeconfig.cache
 C:\Users\user\Desktop\Projects\BlogApp\BlogApp\BlogApp\obj\Debug\net9.0\ref\BlogApp.dll
+C:\Users\user\Desktop\Projects\BlogApp\BlogApp\BlogApp\obj\Debug\net9.0\BlogApp.sourcelink.json
