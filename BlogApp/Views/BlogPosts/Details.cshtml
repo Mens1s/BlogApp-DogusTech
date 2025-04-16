@@ -1,108 +1,167 @@
-﻿@* Views/BlogPosts/Details.cshtml *@
+﻿@* === Views/BlogPosts/Details.cshtml === *@
+@* Model olarak detay DTO'sunu bekliyoruz *@
 @model BlogApp.DTOs.BlogPostDetailDto
+@* Yorum DTO'ları için using direktifi *@
+@using BlogApp.DTOs
+@using Microsoft.AspNetCore.Identity
+@* Identity servislerini inject ederek View içinde kullanıcı bilgilerine ve rollerine erişebiliriz *@
+@inject UserManager<BlogApp.Entities.User> UserManager
+@inject SignInManager<BlogApp.Entities.User> SignInManager
 
 @{
-    ViewData["Title"] = Model?.Title ?? "Blog Yazısı Detayı"; 
+    // Sayfa başlığını dinamik olarak post başlığı yapıyoruz
+    ViewData["Title"] = Model?.Title ?? "Blog Yazısı Detayı";
+    // Yorumları ViewData'dan alıyoruz (Controller'da set edilmiş olmalı)
+    var comments = ViewData["Comments"] as IList<CommentDto>;
+    // Mevcut kullanıcı ID'sini alıyoruz (Yetki kontrolleri için)
+    var currentUserId = SignInManager.IsSignedIn(User) ? UserManager.GetUserId(User) : null;
 }
 
 <div class="container mt-4">
 
-    @if (Model != null) // Modelin null olmadığını kontrol et
+    @* Model null değilse içeriği göster *@
+    @if (Model != null)
     {
         <article>
+            @* Yazı Başlığı ve Meta Bilgileri *@
             <header class="mb-4">
-                @* Başlık *@
                 <h1 class="fw-bolder mb-1">@Model.Title</h1>
-
-                @* Meta Bilgiler *@
                 <div class="text-muted fst-italic mb-2">
                     Yayınlanma Tarihi: @Model.PublishedDate.ToString("dd MMMM yyyy HH:mm")
+                    @* Kategori bilgisi varsa göster ve link ver *@
                     @if (Model.Category != null)
                     {
-                        <span>
-                            | Kategori:
-                            @* Kategoriye link (Category action henüz yok) *@
+                        <span> | Kategori:
                             <a asp-controller="BlogPosts" asp-action="Category" asp-route-categoryId="@Model.Category.Id" class="text-decoration-none">
                                 @Model.Category.Name
                             </a>
                         </span>
                     }
-                    @if (Model.Author != null)
+                    @* Yazar bilgisi varsa göster *@
+                     @if (Model.Author != null)
                     {
-                        <span> | Yazar: @(Model.Author.FullName ?? Model.Author.UserName)</span>
-                        @* Yazar profiline link? (Gerekirse) *@
+                         <span> | Yazar: @(Model.Author.FullName ?? Model.Author.UserName)</span>
+                         @* İsteğe bağlı: Yazarın diğer yazılarına link eklenebilir *@
                     }
                 </div>
                 <hr />
 
-               
+                @* Düzenle/Sil Linkleri (Sadece giriş yapmış ve yetkili kullanıcılar için) *@
+                @if (SignInManager.IsSignedIn(User) && (Model.Author?.Id == currentUserId || User.IsInRole("Admin")))
+                {
+                    <div class="mb-3">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary me-2">
+                            <i class="bi bi-pencil-square"></i> Düzenle
+                        </a>
+                        @* Silme linki yerine direkt form kullanmak daha güvenli olabilir veya modal ile onay alınabilir *@
+                        <form asp-action="Delete" method="get" asp-route-id="@Model.Id" class="d-inline">
+                             <button type="submit" class="btn btn-sm btn-outline-danger">
+                                 <i class="bi bi-trash"></i> Sil
+                             </button>
+                        </form>
+
+                    </div>
+                    <hr />
+                }
 
             </header>
 
-            @* Görsel *@
+            @* Yazı Görseli *@
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
-                <figure class="mb-4">
-                    <img class="img-fluid rounded w-100" src="@Model.ImageUrl" alt="@Model.Title" style="max-height: 450px; object-fit: cover;" />
+                <figure class="mb-4 text-center">
+                    <img class="img-fluid rounded shadow-sm" src="@Model.ImageUrl" alt="@Model.Title" style="max-height: 500px; object-fit: cover;"/>
                 </figure>
             }
 
-            @* İçerik *@
-            <section class="mb-5">
-                
+            @* Yazı İçeriği *@
+            <section class="mb-5 fs-5"> @* Yazı boyutunu biraz büyüttük *@
+
                 @Html.Raw(Model.Content)
             </section>
 
         </article>
 
-        @* --- Yorumlar Bölümü (Opsiyonel - Ekstra) --- *@
-        <hr />
+        @* === Yorumlar Bölümü === *@
+        <hr class="my-5" />
         <section class="mb-5">
-            <h4 class="mb-3">Yorumlar</h4>
+            @* Yorum sayısını dinamik olarak göster *@
+            <h3 class="mb-4">Yorumlar (@(comments?.Count ?? 0))</h3>
 
-            @if (User.Identity?.IsAuthenticated ?? false)
+            @* Yorum Ekleme Formu Partial View'ı *@
+            @if (SignInManager.IsSignedIn(User)) // Giriş yapılmışsa formu göster
             {
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5>Yorum Bırak</h5>
-                        <form asp-controller="Comments" asp-action="Create" method="post">
-                            @* Comments Controller henüz yok *@
-                            <input type="hidden" name="BlogPostId" value="@Model.Id" />
-                            <div class="mb-3">
-                                <textarea name="Content" class="form-control" rows="3" placeholder="Yorumunuzu buraya yazın..." required></textarea>
-                                @* Validation mesajı eklenebilir *@
-                            </div>
-                            <button type="submit" class="btn btn-primary">Gönder</button>
-                        </form>
-                    </div>
-                </div>
+                 @await Html.PartialAsync("_CommentFormPartial", new CommentCreateDto { BlogPostId = Model.Id })
             }
-            else
+            else // Giriş yapılmamışsa mesaj göster
             {
                 <div class="alert alert-info" role="alert">
-                    Yorum bırakmak için <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path">giriş yapmalısınız</a>.
-                    @* Identity Area yoksa /Account/Login kullanılır *@
-                    @* <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">giriş yapmalısınız</a>. *@
+                    Yorum bırakmak için lütfen
+                    @* Identity Area'daki Login sayfasına yönlendiriyoruz, dönüş URL'si olarak bu sayfayı veriyoruz *@
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Details", "BlogPosts", new { id = Model.Id })" class="alert-link">giriş yapın</a>.
                 </div>
             }
 
+             @* Yorum Ekleme/Silme sonrası gösterilecek Başarı/Hata Mesajları *@
+             @if (TempData["SuccessMessage"] != null)
+             {
+                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                     @TempData["SuccessMessage"]
+                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                 </div>
+             }
+             @if (TempData["ErrorMessage"] != null)
+             {
+                 <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                     @TempData["ErrorMessage"]
+                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                 </div>
+             }
 
-            <p class="text-muted"><i>(Yorum listeleme özelliği henüz eklenmemiştir.)</i></p> @* Şimdilik placeholder *@
 
+            @* Mevcut Yorumların Listesi *@
+            <div class="mt-4">
+                @if (comments != null && comments.Any()) // Yorum varsa listele
+                {
+                    @foreach (var comment in comments.OrderByDescending(c => c.CommentDate)) // En yeniden eskiye doğru sırala
+                    {
+                         @* Her bir yorum için _CommentItemPartial'ı çağır *@
+                         @await Html.PartialAsync("_CommentItemPartial", comment)
+                    }
+                }
+                else 
+                {
+                    <p class="text-muted">Henüz hiç yorum yapılmamış. İlk yorumu siz ekleyin!</p>
+                }
+            </div>
         </section>
-        @* --- Yorumlar Bölümü Sonu --- *@
 
 
-        <div class="mt-4">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Geri Dön</a>
+        @* Anasayfaya Geri Dön Linki *@
+        <div class="mt-5 mb-3 text-center">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Tüm Yazılara Geri Dön
+            </a>
         </div>
 
     }
+    @* Model null ise hata mesajı göster *@
     else
     {
-        <div class="alert alert-danger" role="alert">
-            İstenen blog yazısı bulunamadı.
+        <div class="alert alert-danger text-center" role="alert">
+            <h4 class="alert-heading">Yazı Bulunamadı!</h4>
+            <p>Aradığınız blog yazısı mevcut değil veya silinmiş olabilir.</p>
+            <hr>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-house-door"></i> Ana Sayfaya Dön
+            </a>
         </div>
-        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Geri Dön</a>
     }
+
 </div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @* Yorum formu için veya başka client-side işlemler için scriptler buraya eklenebilir *@
+}

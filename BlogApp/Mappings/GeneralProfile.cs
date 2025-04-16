@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BlogApp.DTOs;
 using BlogApp.Entities;
+using BlogApp.ViewModels.BlogPost;
 
 namespace BlogApp.Mappings
 {
@@ -12,6 +13,7 @@ namespace BlogApp.Mappings
             CreateMap<Category, CategoryDto>().ReverseMap();
             
             CreateMap<User, UserDto>();
+            CreateMap<BlogPostCreateViewModel, BlogPostCreateDto>();
 
 
             CreateMap<BlogPost, BlogPostDto>()

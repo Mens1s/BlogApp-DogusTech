@@ -6,6 +6,24 @@
     ViewData["Title"] = "Ana Sayfa";
 }
 
+@{
+    // Eğer ViewData["Title"] set edilmişse onu kullan, değilse varsayılan başlık
+    ViewData["Title"] = ViewData["Title"] ?? "Ana Sayfa";
+    var categoryName = ViewBag.CategoryName as string; // Kategori adını al
+}
+
+@if (!string.IsNullOrEmpty(categoryName)) // Kategori filtresi varsa başlığı göster
+{
+    <h1 class="display-5 text-center mb-4">@categoryName Kategorisindeki Yazılar</h1>
+}
+else // Yoksa standart başlık
+{
+    <div class="text-center mb-4">
+        <h1 class="display-4">Blog Sitemize Hoş Geldiniz</h1>
+        <p>En son eklenen yazılar aşağıdadır.</p>
+    </div>
+}
+
 <div class="text-center mb-4">
     <h1 class="display-4">Blog Sitemize Hoş Geldiniz</h1>
     <p>En son eklenen yazılar aşağıdadır.</p>

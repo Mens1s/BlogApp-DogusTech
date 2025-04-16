@@ -1,0 +1,53 @@
+﻿@model BlogApp.ViewModels.BlogPost.BlogPostCreateViewModel
+
+@{
+    ViewData["Title"] = "Yeni Blog Yazısı Ekle";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        @* Formu biraz daraltalım *@
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken() @* CSRF koruması *@
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div> @* Sadece model seviyesi hatalar *@
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="CategoryId" class="form-label"></label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ImageUrl" class="form-label"></label>
+                <input asp-for="ImageUrl" class="form-control" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Content" class="form-label"></label>
+                @* Basit textarea, ileride Rich Text Editor (TinyMCE, CKEditor) eklenebilir *@
+                <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Oluştur</button>
+                <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Client-side validation scriptlerini eklemek için *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @* Rich Text Editor scriptleri buraya eklenebilir *@
+}

@@ -16,15 +16,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Identity\" />
     <Folder Include="Data\Migrations\" />
     <Folder Include="Services\ValidationRules\" />
     <Folder Include="ViewModels\Account\" />
-    <Folder Include="ViewModels\BlogPost\" />
     <Folder Include="ViewModels\Category\" />
     <Folder Include="ViewModels\Shared\" />
     <Folder Include="Views\Account\" />

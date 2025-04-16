@@ -1,81 +1,82 @@
-using BlogApp.Data;
-using BlogApp.Entities;
+using BlogApp.Data; // namespace'i kontrol edin
+using BlogApp.Entities; // namespace'i kontrol edin
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using BlogApp.Data.Abstract; 
-using BlogApp.Data.Concrete;
-using AutoMapper;
-using BlogApp.Services.Abstract;
+using BlogApp.Data.Abstract; // namespace'i kontrol edin
+ // namespace'i kontrol edin (varsa)
+using BlogApp.Services.Abstract; // namespace'i kontrol edin
 using BlogApp.Services.Concrete;
+using BlogApp.Data.Concrete; // namespace'i kontrol edin
 
 var builder = WebApplication.CreateBuilder(args);
-
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json.");
+?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json.");
 
 builder.Services.AddDbContext<BlogAppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddIdentity<User, IdentityRole>(options => 
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.Password.RequireDigit = true;       
-    options.Password.RequireLowercase = true;    
-    options.Password.RequireUppercase = true;    
-    options.Password.RequiredLength = 8;         
-    options.Password.RequireNonAlphanumeric = false; 
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
 
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); 
-    options.Lockout.MaxFailedAccessAttempts = 15;                     
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5; 
     options.Lockout.AllowedForNewUsers = true;
 
+    // KullanÄ±cÄ± AyarlarÄ±
     options.User.AllowedUserNameCharacters =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;     
+    options.User.RequireUniqueEmail = true;
+
+    // Oturum AÃ§ma AyarlarÄ±
+    options.SignIn.RequireConfirmedAccount = false; 
 })
     .AddEntityFrameworkStores<BlogAppDbContext>()
-    .AddDefaultTokenProviders()
-    .AddDefaultUI();
+    .AddDefaultTokenProviders() 
+    .AddDefaultUI(); 
 
-builder.Services.ConfigureApplicationCookie(options => { /* Ayarlar */ });
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.SlidingExpiration = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+  
+    options.LoginPath = "/Identity/Account/Login"; // Identity Area kullanÄ±yorsanÄ±z path bÃ¶yle olmalÄ±
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    // EÄŸer Identity Area kullanmÄ±yorsanÄ±z /Account/Login vb. olabilir. Scaffolding genellikle Area kullanÄ±r.
+});
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-// NOT: UnitOfWork kullandýðýmýz için genellikle tek tek repository'leri kaydetmeye GEREK YOKTUR.
-// Çünkü UnitOfWork zaten içinde repository'leri oluþturuyor.
-// Ancak, eðer bir yerde doðrudan IBlogPostRepository'ye ihtiyaç duyarsanýz (UoW kullanmadan),
-// o zaman aþaðýdaki gibi kayýtlarý da yapmanýz gerekebilir (ama genellikle UoW yeterlidir):
-// builder.Services.AddScoped<IBlogPostRepository, EfCoreBlogPostRepository>();
-// builder.Services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
-// builder.Services.AddScoped<ICommentRepository, EfCoreCommentRepository>(); // Yorumlar varsa
+
+
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true; 
-    options.ExpireTimeSpan = TimeSpan.FromDays(30); 
-    options.SlidingExpiration = true; 
-    options.Cookie.SameSite = SameSiteMode.Lax; 
-
-    options.LoginPath = "/Account/Login";       
-    options.LogoutPath = "/Account/Logout";      
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});
-
-builder.Services.AddRazorPages();
-
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); 
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment()) // Development kontrolÃ¼ dÃ¼zeltildi
+{
+    //app.UseMigrationsEndPoint(); // Db HatalarÄ± iÃ§in
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -84,14 +85,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 

@@ -1,50 +1,96 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Identity
+@using BlogApp.Entities 
+
+
+<!DOCTYPE html>
+<html lang="tr">
+@* Dili Türkçe olarak ayarlayalım *@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BlogApp</title>
-    <script type="importmap"></script>
+
+    @* Bootstrap CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* Bootstrap Icons CSS (CDN üzerinden) *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @* Siteye özel CSS *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BlogApp.styles.css" asp-append-version="true" />
+    @* Projeye özel stiller (varsa) *@
+    <link rel="stylesheet" href="~/BlogApp.Web.styles.css" asp-append-version="true" />
+
+    @* Gereksiz importmap kaldırıldı *@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlogApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+        @* Navbar: Açık tema, üstte sabit (isteğe bağlı: fixed-top), gölgeli *@
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom box-shadow mb-3">
+            @* Navbar içeriğini tam genişlik yerine standart container içine alalım *@
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-journal-richtext"></i> BlogApp
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door"></i> Ana Sayfa
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="BlogPosts" asp-action="Create">
+                                    <i class="bi bi-plus-square"></i> Yeni Yazı Ekle
+                                </a>
+                            </li>
+                        }
                     </ul>
-                </div>
-            </div>
+                    <partial name="_LoginPartial" />
+
+                </div> @* //.navbar-collapse *@
+            </div> @* //.container *@
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+
+    <div class="container mt-4">
+        <main role="main" class="pb-5">
+            @if (TempData["GlobalSuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["GlobalSuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["GlobalErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["GlobalErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @RenderBody() 
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - BlogApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    @* Footer Alanı *@
+    <footer class="footer border-top py-3 bg-light text-muted mt-auto">
+        @* mt-auto ile sayfa kısaysa footer en altta kalır *@
+        <div class="container text-center">
+            © @DateTime.Now.Year - BlogApp - Tüm Hakları Saklıdır.
+            @* <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a> *@
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

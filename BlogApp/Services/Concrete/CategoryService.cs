@@ -22,7 +22,7 @@ namespace BlogApp.Services.Concrete
         {
             try
             {
-                var categories = await _unitOfWork.Categories.GetAllAsync(x => x.Id > 0, x => x.Id);
+                var categories = await _unitOfWork.Categories.GetAllAsync(x => x.Id > 0);
                 return _mapper.Map<IList<CategoryDto>>(categories);
             }
             catch (Exception ex)

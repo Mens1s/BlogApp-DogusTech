@@ -1,0 +1,17 @@
+﻿@model BlogApp.DTOs.CommentCreateDto
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">Yorum Bırak</h5>
+        <form asp-controller="Comments" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="BlogPostId" /> @* Post ID'sini formla gönder *@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <textarea asp-for="Content" class="form-control" rows="3" placeholder="Yorumunuzu buraya yazın..." required></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Gönder</button>
+        </form>
+    </div>
+</div>

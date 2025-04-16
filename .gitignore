@@ -26,6 +26,8 @@ ScaffoldingReadMe.txt
 
 # Others
 .vs/
+obj/
+properties/
 _ReSharper*/
 *.ncrunch*
 *.localhistory/

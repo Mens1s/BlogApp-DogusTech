@@ -1,2 +1,6 @@
 ﻿@using BlogApp
+@using Microsoft.AspNetCore.Identity
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@inject UserManager<BlogApp.Entities.User> UserManager
+@inject SignInManager<BlogApp.Entities.User> SignInManager
