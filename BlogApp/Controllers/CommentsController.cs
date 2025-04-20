@@ -31,10 +31,8 @@ namespace BlogApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Model geçerli değilse ne yapmalı? Genellikle AJAX ile gönderilir.
-                // Şimdilik hata mesajı ile geri yönlendirelim.
+
                 TempData["ErrorMessage"] = "Yorum içeriği boş olamaz veya çok uzun.";
-                // Yorumun ait olduğu post ID'sini bilmemiz lazım! DTO'da var.
                 return RedirectToAction("Details", "BlogPosts", new { id = dto.BlogPostId });
             }
 
@@ -62,7 +60,6 @@ namespace BlogApp.Controllers
             }
 
 
-            // Her durumda postun detay sayfasına geri dön
             return RedirectToAction("Details", "BlogPosts", new { id = dto.BlogPostId });
         }
 
@@ -77,9 +74,6 @@ namespace BlogApp.Controllers
 
             try
             {
-                // Yetki kontrolü serviste veya burada yapılabilir:
-                // bool owns = await _commentService.UserOwnsCommentAsync(commentId, userId);
-                // if (!owns && !User.IsInRole("Admin")) return Forbid();
 
                 bool success = await _commentService.DeleteCommentAsync(commentId, userId); // Servis yetkiyi kontrol etmeli
 
